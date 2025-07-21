@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Holiday Hours Tracker - Creative</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #8b5cf6; /* Violet */
+            --secondary-color: #ec4899; /* Pink */
+            --background-start: #dbeafe;
+            --background-end: #fce7f3;
+            --card-bg: rgba(255, 255, 255, 0.6);
+            --text-dark: #1f2937;
+            --text-light: #6b7280;
+            --border-color: rgba(255, 255, 255, 0.8);
+            --shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+            --input-bg: rgba(255, 255, 255, 0.5);
+        }
+
+        body.dark-mode {
+            --primary-color: #a78bfa; /* Lighter Violet */
+            --secondary-color: #f472b6; /* Lighter Pink */
+            --background-start: #1e293b;
+            --background-end: #312e81;
+            --card-bg: rgba(30, 41, 59, 0.5);
+            --text-dark: #f1f5f9;
+            --text-light: #94a3b8;
+            --border-color: rgba(255, 255, 255, 0.1);
+            --input-bg: rgba(0, 0, 0, 0.2);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 1.5rem;
+            background: linear-gradient(125deg, var(--background-start), var(--background-end));
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            transition: background-color 0.5s;
+            overflow: hidden;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .page {
+            width: 100%;
+            max-width: 550px;
+            animation: page-in 0.7s ease-out forwards;
+        }
+
+        @keyframes page-in {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .page.hidden {
+            display: none;
+        }
+
+        /* --- Landing Page Styles --- */
+        #landing-page .app-container {
+            text-align: center;
+        }
+        
+        #landing-page h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+        }
+
+        #landing-page p {
+            font-size: 1.1rem;
+            color: var(--text-light);
+            margin-bottom: 2.5rem;
+        }
+
+        #open-tracker-btn {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            padding: 1rem 2.5rem;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.3s;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+        
+        #open-tracker-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 25px rgba(0,0,0,0.2);
+        }
+
+
+        /* --- Main App Styles --- */
+        .app-container {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 24px;
+            border: 1px solid var(--border-color);
+            padding: 2rem 2.5rem;
+            box-shadow: var(--shadow);
+            color: var(--text-dark);
+            transition: background-color 0.5s, color 0.5s;
+        }
+        
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        header h1 {
+            font-size: 1.5rem;
+            font-weight: 800;
+        }
+
+        /* --- THEME SWITCHER --- */
+        #theme-toggle { display: none; }
+        #theme-toggle + label {
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+        #theme-toggle + label:hover { transform: scale(1.1) rotate(15deg); }
+        #theme-toggle + label .moon { display: none; }
+        #theme-toggle + label .sun-icon { display: inline-block; }
+        body.dark-mode #theme-toggle + label .moon { display: inline-block; }
+        body.dark-mode #theme-toggle + label .sun-icon { display: none; }
+
+        .dashboard {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .dashboard label {
+            font-weight: 500;
+            color: var(--text-light);
+            font-size: 1rem;
+        }
+
+        #remaining-hours-display {
+            font-size: 5rem;
+            font-weight: 800;
+            line-height: 1.1;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 0.5rem 0;
+            padding: 0.5rem;
+            border-radius: 12px;
+            border: 2px solid transparent;
+            transition: background-color 0.3s, border-color 0.3s;
+            cursor: pointer;
+            width: 100%;
+            text-align: center;
+            outline: none;
+        }
+        
+        #remaining-hours-display:focus {
+            background: var(--input-bg);
+            -webkit-text-fill-color: var(--text-dark);
+            border-color: var(--primary-color);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .stat-card {
+            background: var(--input-bg);
+            padding: 1rem;
+            border-radius: 12px;
+        }
+        
+        .label-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .edit-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+            color: var(--text-light);
+            padding: 0;
+            transition: transform 0.2s;
+        }
+        
+        .edit-btn:hover {
+            transform: scale(1.2);
+        }
+
+        .stat-card input {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            width: 100%;
+            text-align: center;
+            border: none;
+            background: transparent;
+            outline: none;
+            border-radius: 8px;
+        }
+        
+        .stat-card input:not(:disabled) {
+            background: var(--input-bg);
+            box-shadow: inset 0 0 0 1px var(--primary-color);
+        }
+        
+        .stat-card #booked-hours {
+            color: var(--text-light);
+        }
+
+        h2 {
+            font-size: 1.25rem;
+            text-align: center;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: var(--text-light);
+        }
+
+        #booking-form {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 1rem;
+            align-items: flex-end;
+            margin-bottom: 2rem;
+        }
+
+        #booking-form input {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            font-size: 1rem;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--input-bg);
+            color: var(--text-dark);
+            transition: all 0.3s;
+        }
+        
+        #booking-form input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px var(--primary-color);
+        }
+        
+        #booking-form button {
+            padding: 0.8rem;
+            height: 100%;
+            width: 50px;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.3s;
+        }
+        
+        #booking-form button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        #holiday-list {
+            list-style: none;
+            padding: 0;
+            max-height: 250px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        #holiday-list::-webkit-scrollbar { width: 6px; }
+        #holiday-list::-webkit-scrollbar-track { background: transparent; }
+        #holiday-list::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 3px; }
+
+        #holiday-list li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: var(--input-bg);
+            border-radius: 10px;
+            margin-bottom: 0.8rem;
+            opacity: 0;
+            animation: item-in 0.5s forwards;
+        }
+
+        #holiday-list li:nth-child(odd) { animation-delay: 0.1s; }
+        #holiday-list li:nth-child(even) { animation-delay: 0.2s; }
+
+        @keyframes item-in {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .holiday-info strong { font-weight: 600; }
+        .holiday-info span { color: var(--text-light); font-size: 0.9rem; display: block; margin-top: 2px; }
+        .holiday-actions button { background: none; border: none; cursor: pointer; font-size: 1.2rem; color: var(--text-light); transition: all 0.2s; padding: 5px; }
+        .holiday-actions button:hover { color: #ef4444; transform: scale(1.1); }
+        
+        .home-button {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-light);
+            transition: color 0.2s, transform 0.2s;
+        }
+        .home-button:hover {
+            color: var(--text-dark);
+            transform: scale(1.1);
+        }
+        
+        @media (max-width: 500px) {
+            body { padding: 1rem; align-items: flex-start; }
+            .app-container { padding: 1.5rem; }
+            #booking-form { grid-template-columns: 1fr; }
+            #booking-form button { width: 100%; margin-top: -0.5rem; }
+            #remaining-hours-display { font-size: 4rem; }
+            #landing-page h1 { font-size: 2.5rem; }
+        }
+
+    </style>
+</head>
+<body>
+
+    <section id="landing-page" class="page">
+        <div class="app-container">
+             <div style="display: flex; justify-content: flex-end;">
+                <div class="theme-switcher">
+                    <input type="checkbox" id="theme-toggle-landing">
+                    <label for="theme-toggle-landing" title="Toggle theme">
+                        <span class="sun-icon">☀️</span>
+                        <span class="moon">🌙</span>
+                    </label>
+                </div>
+            </div>
+            <h1>Leave Tracker</h1>
+            <p>Your simple, beautiful holiday hours tracker.</p>
+            <button id="open-tracker-btn">Open Tracker</button>
+        </div>
+    </section>
+
+    <section id="dashboard-page" class="page hidden">
+        <div class="app-container">
+            <header>
+                <button class="home-button" id="go-home-btn" title="Go to Home">🏠</button>
+                <div class="theme-switcher">
+                    <input type="checkbox" id="theme-toggle-dashboard">
+                    <label for="theme-toggle-dashboard" title="Toggle theme">
+                        <span class="sun-icon">☀️</span>
+                        <span class="moon">🌙</span>
+                    </label>
+                </div>
+            </header>
+
+            <main>
+                <section class="dashboard">
+                    <label>Remaining Hours</label>
+                    <input type="number" id="remaining-hours-display" step="0.1">
+
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="label-container">
+                                <label>Total Allowance</label>
+                                <button id="edit-allowance-btn" class="edit-btn" title="Edit Allowance">🔒</button>
+                            </div>
+                            <input type="number" id="total-allowance" value="204.5" step="0.1" min="0" disabled>
+                        </div>
+                        <div class="stat-card">
+                            <label>Booked</label>
+                            <input type="number" id="booked-hours" value="0" step="0.1" disabled>
+                        </div>
+                    </div>
+                </section>
+                
+                <hr style="border: none; height: 1px; background-color: var(--border-color); margin: 2rem 0;">
+
+                <section class="booking-section">
+                    <form id="booking-form">
+                        <div>
+                            <label for="holiday-date" class="sr-only">Date</label>
+                            <input type="date" id="holiday-date" required>
+                        </div>
+                        <button type="submit" title="Book 11.5 Hours">+</button>
+                    </form>
+                    <div id="holiday-list-container">
+                         <h2 id="list-title">Booked Dates</h2>
+                         <ul id="holiday-list"></ul>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </section>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // --- DOM ELEMENTS ---
+        const landingPage = document.getElementById('landing-page');
+        const dashboardPage = document.getElementById('dashboard-page');
+        const openTrackerBtn = document.getElementById('open-tracker-btn');
+        const goHomeBtn = document.getElementById('go-home-btn');
+        
+        const totalAllowanceInput = document.getElementById('total-allowance');
+        const remainingHoursDisplay = document.getElementById('remaining-hours-display');
+        const bookedHoursEl = document.getElementById('booked-hours');
+        const editAllowanceBtn = document.getElementById('edit-allowance-btn');
+        
+        const bookingForm = document.getElementById('booking-form');
+        const holidayDateInput = document.getElementById('holiday-date');
+        const holidayListEl = document.getElementById('holiday-list');
+        
+        const themeToggleLanding = document.getElementById('theme-toggle-landing');
+        const themeToggleDashboard = document.getElementById('theme-toggle-dashboard');
+
+        // --- STATE ---
+        let holidays = [];
+        let totalAllowance = 204.5;
+        const DEDUCTION_HOURS = 11.5;
+
+        // --- NAVIGATION ---
+        function showPage(pageToShow) {
+            landingPage.classList.toggle('hidden', pageToShow !== landingPage);
+            dashboardPage.classList.toggle('hidden', pageToShow !== dashboardPage);
+        }
+        
+        openTrackerBtn.addEventListener('click', () => showPage(dashboardPage));
+        goHomeBtn.addEventListener('click', () => showPage(landingPage));
+
+        // --- THEME LOGIC ---
+        const applyTheme = (theme) => {
+            document.body.classList.toggle('dark-mode', theme === 'dark');
+            themeToggleLanding.checked = theme === 'dark';
+            themeToggleDashboard.checked = theme === 'dark';
+        };
+        
+        function handleThemeToggle() {
+            const newTheme = this.checked ? 'dark' : 'light';
+            localStorage.setItem('theme', newTheme);
+            applyTheme(newTheme);
+        }
+
+        themeToggleLanding.addEventListener('change', handleThemeToggle);
+        themeToggleDashboard.addEventListener('change', handleThemeToggle);
+
+        // --- FUNCTIONS ---
+        function updateSummary() {
+            const bookedHours = holidays.reduce((total, holiday) => total + holiday.hours, 0);
+            const remainingHours = totalAllowance - bookedHours;
+
+            totalAllowanceInput.value = totalAllowance.toFixed(1);
+            bookedHoursEl.value = bookedHours.toFixed(1);
+            remainingHoursDisplay.value = remainingHours.toFixed(1);
+        }
+
+        function renderHolidays() {
+            holidayListEl.innerHTML = '';
+            document.getElementById('list-title').style.display = holidays.length > 0 ? 'block' : 'none';
+            
+            const sortedHolidays = [...holidays].sort((a, b) => new Date(a.rawDate) - new Date(b.rawDate));
+            sortedHolidays.forEach(holiday => {
+                const li = document.createElement('li');
+                li.setAttribute('data-id', holiday.id);
+                li.innerHTML = `
+                    <div class="holiday-info">
+                        <strong>${holiday.description}</strong>
+                        <span>${holiday.hours} hours</span>
+                    </div>
+                    <div class="holiday-actions">
+                        <button class="delete-btn" title="Delete this booking">🗑️</button>
+                    </div>
+                `;
+                holidayListEl.appendChild(li);
+            });
+        }
+
+        function addHoliday(e) {
+            e.preventDefault();
+            const holidayDateValue = holidayDateInput.value;
+            if (!holidayDateValue) {
+                alert('Please select a date.');
+                return;
+            }
+            const holidayDate = new Date(holidayDateValue);
+            
+            const newHoliday = {
+                id: Date.now(),
+                description: holidayDate.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'short' }),
+                rawDate: holidayDateValue,
+                hours: DEDUCTION_HOURS
+            };
+
+            holidays.push(newHoliday);
+            saveData();
+            renderHolidays();
+            updateSummary();
+            bookingForm.reset();
+        }
+        
+        function deleteHoliday(id) {
+            holidays = holidays.filter(holiday => holiday.id !== id);
+            saveData();
+            renderHolidays();
+            updateSummary();
+        }
+        
+        function saveData() {
+            localStorage.setItem('holidayTracker.holidays', JSON.stringify(holidays));
+            localStorage.setItem('holidayTracker.allowance', totalAllowance);
+        }
+        
+        function loadData() {
+            const savedTheme = localStorage.getItem('theme');
+            const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            applyTheme(savedTheme || (systemPrefersDark ? 'dark' : 'light'));
+
+            const savedHolidays = JSON.parse(localStorage.getItem('holidayTracker.holidays'));
+            const savedAllowance = localStorage.getItem('holidayTracker.allowance');
+
+            if (savedHolidays) holidays = savedHolidays;
+            if (savedAllowance) totalAllowance = parseFloat(savedAllowance);
+            
+            renderHolidays();
+            updateSummary();
+        }
+
+        // --- EVENT LISTENERS ---
+        editAllowanceBtn.addEventListener('click', () => {
+            const isLocked = totalAllowanceInput.disabled;
+            totalAllowanceInput.disabled = !isLocked;
+
+            if (isLocked) { // Unlocking
+                editAllowanceBtn.textContent = '🔓';
+                editAllowanceBtn.title = 'Save Allowance';
+                totalAllowanceInput.focus();
+            } else { // Locking
+                editAllowanceBtn.textContent = '🔒';
+                editAllowanceBtn.title = 'Edit Allowance';
+                // Manually trigger change event to save
+                totalAllowanceInput.dispatchEvent(new Event('change'));
+            }
+        });
+
+        totalAllowanceInput.addEventListener('change', (e) => {
+            totalAllowance = parseFloat(e.target.value) || 0;
+            updateSummary();
+            saveData();
+        });
+
+        remainingHoursDisplay.addEventListener('change', (e) => {
+            const newRemaining = parseFloat(e.target.value) || 0;
+            const currentBooked = holidays.reduce((total, holiday) => total + holiday.hours, 0);
+            totalAllowance = newRemaining + currentBooked;
+            updateSummary();
+            saveData();
+        });
+        
+        bookingForm.addEventListener('submit', addHoliday);
+        
+        holidayListEl.addEventListener('click', (e) => {
+            if (e.target.classList.contains('delete-btn')) {
+                const id = parseInt(e.target.closest('li').dataset.id, 10);
+                deleteHoliday(id);
+            }
+        });
+
+        // --- INITIAL LOAD ---
+        loadData();
+    });
+    </script>
+</body>
+</html>
