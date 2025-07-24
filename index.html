@@ -11,6 +11,9 @@
         :root {
             --primary-color: #8b5cf6; /* Violet */
             --secondary-color: #ec4899; /* Pink */
+            --approved-color: #16a34a; /* Green 600 */
+            --pending-color: #d97706; /* Amber 600 */
+            --draft-color: #475569; /* Slate 600 - Updated for better contrast */
             --background-start: #dbeafe;
             --background-end: #fce7f3;
             --card-bg: rgba(255, 255, 255, 0.6);
@@ -24,6 +27,9 @@
         body.dark-mode {
             --primary-color: #a78bfa; /* Lighter Violet */
             --secondary-color: #f472b6; /* Lighter Pink */
+            --approved-color: #4ade80; /* Green 400 */
+            --pending-color: #fb923c; /* Orange 400 */
+            --draft-color: #94a3b8; /* Slate 400 */
             --background-start: #1e293b;
             --background-end: #312e81;
             --card-bg: rgba(30, 41, 59, 0.5);
@@ -50,7 +56,7 @@
             background-size: 400% 400%;
             animation: gradientBG 15s ease infinite;
             transition: background-color 0.5s;
-            overflow: hidden;
+            overflow-x: hidden; /* Fix: Allow vertical scroll */
         }
 
         @keyframes gradientBG {
@@ -140,17 +146,16 @@
         }
 
         /* --- THEME SWITCHER --- */
-        #theme-toggle { display: none; }
-        #theme-toggle + label {
+        .theme-switcher {
             font-size: 1.5rem;
             cursor: pointer;
             transition: transform 0.3s ease;
         }
-        #theme-toggle + label:hover { transform: scale(1.1) rotate(15deg); }
-        #theme-toggle + label .moon { display: none; }
-        #theme-toggle + label .sun-icon { display: inline-block; }
-        body.dark-mode #theme-toggle + label .moon { display: inline-block; }
-        body.dark-mode #theme-toggle + label .sun-icon { display: none; }
+        .theme-switcher:hover { transform: scale(1.1) rotate(15deg); }
+        .theme-switcher .moon { display: none; }
+        .theme-switcher .sun-icon { display: inline-block; }
+        body.dark-mode .theme-switcher .moon { display: inline-block; }
+        body.dark-mode .theme-switcher .sun-icon { display: none; }
 
         .dashboard {
             text-align: center;
@@ -253,13 +258,13 @@
 
         #booking-form {
             display: grid;
-            grid-template-columns: 1fr auto;
+            grid-template-columns: 1fr 1fr auto;
             gap: 1rem;
             align-items: flex-end;
             margin-bottom: 2rem;
         }
 
-        #booking-form input {
+        #booking-form input, #booking-form select {
             width: 100%;
             padding: 0.8rem 1rem;
             border: 1px solid var(--border-color);
@@ -271,7 +276,7 @@
             transition: all 0.3s;
         }
         
-        #booking-form input:focus {
+        #booking-form input:focus, #booking-form select:focus {
             outline: none;
             border-color: var(--primary-color);
             box-shadow: 0 0 0 3px var(--primary-color);
@@ -318,7 +323,25 @@
             margin-bottom: 0.8rem;
             opacity: 0;
             animation: item-in 0.5s forwards;
+            position: relative;
+            padding-left: 2rem;
         }
+        
+        #holiday-list li::before {
+            content: '';
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        #holiday-list li.status-Approved::before { background-color: var(--approved-color); }
+        #holiday-list li.status-Pending::before { background-color: var(--pending-color); }
+        #holiday-list li.status-Draft::before { background-color: var(--draft-color); }
+
 
         #holiday-list li:nth-child(odd) { animation-delay: 0.1s; }
         #holiday-list li:nth-child(even) { animation-delay: 0.2s; }
@@ -330,6 +353,21 @@
 
         .holiday-info strong { font-weight: 600; }
         .holiday-info span { color: var(--text-light); font-size: 0.9rem; display: block; margin-top: 2px; }
+        
+        /* New styles for status text */
+        .status-text {
+            font-weight: 700;
+        }
+        .status-text.status-Approved {
+            color: var(--approved-color);
+        }
+        .status-text.status-Pending {
+            color: var(--pending-color);
+        }
+        .status-text.status-Draft {
+            color: var(--draft-color);
+        }
+
         .holiday-actions button { background: none; border: none; cursor: pointer; font-size: 1.2rem; color: var(--text-light); transition: all 0.2s; padding: 5px; }
         .holiday-actions button:hover { color: #ef4444; transform: scale(1.1); }
         
@@ -349,8 +387,8 @@
         @media (max-width: 500px) {
             body { padding: 1rem; align-items: flex-start; }
             .app-container { padding: 1.5rem; }
-            #booking-form { grid-template-columns: 1fr; }
-            #booking-form button { width: 100%; margin-top: -0.5rem; }
+            #booking-form { grid-template-columns: 1fr; gap: 0.5rem; }
+            #booking-form button { width: 100%; margin-top: 0.5rem; }
             #remaining-hours-display { font-size: 4rem; }
             #landing-page h1 { font-size: 2.5rem; }
         }
@@ -362,15 +400,12 @@
     <section id="landing-page" class="page">
         <div class="app-container">
              <div style="display: flex; justify-content: flex-end;">
-                <div class="theme-switcher">
-                    <input type="checkbox" id="theme-toggle-landing">
-                    <label for="theme-toggle-landing" title="Toggle theme">
-                        <span class="sun-icon">☀️</span>
-                        <span class="moon">🌙</span>
-                    </label>
+                <div class="theme-switcher" id="theme-switcher-landing" title="Toggle theme">
+                    <span class="sun-icon">☀️</span>
+                    <span class="moon">🌙</span>
                 </div>
             </div>
-            <h1>Leave Tracker</h1>
+            <h1>Annual Leave Tracker</h1>
             <p>Your simple, beautiful holiday hours tracker.</p>
             <button id="open-tracker-btn">Open Tracker</button>
         </div>
@@ -380,12 +415,9 @@
         <div class="app-container">
             <header>
                 <button class="home-button" id="go-home-btn" title="Go to Home">🏠</button>
-                <div class="theme-switcher">
-                    <input type="checkbox" id="theme-toggle-dashboard">
-                    <label for="theme-toggle-dashboard" title="Toggle theme">
-                        <span class="sun-icon">☀️</span>
-                        <span class="moon">🌙</span>
-                    </label>
+                <div class="theme-switcher" id="theme-switcher-dashboard" title="Toggle theme">
+                    <span class="sun-icon">☀️</span>
+                    <span class="moon">🌙</span>
                 </div>
             </header>
 
@@ -403,7 +435,7 @@
                             <input type="number" id="total-allowance" value="204.5" step="0.1" min="0" disabled>
                         </div>
                         <div class="stat-card">
-                            <label>Booked</label>
+                            <label>Approved Booked</label>
                             <input type="number" id="booked-hours" value="0" step="0.1" disabled>
                         </div>
                     </div>
@@ -417,10 +449,18 @@
                             <label for="holiday-date" class="sr-only">Date</label>
                             <input type="date" id="holiday-date" required>
                         </div>
+                        <div>
+                            <label for="leave-status" class="sr-only">Status</label>
+                            <select id="leave-status">
+                                <option value="Approved">Approved</option>
+                                <option value="Pending">Pending</option>
+                                <option value="Draft">Draft</option>
+                            </select>
+                        </div>
                         <button type="submit" title="Book 11.5 Hours">+</button>
                     </form>
                     <div id="holiday-list-container">
-                         <h2 id="list-title">Booked Dates</h2>
+                         <h2 id="list-title">All Bookings</h2>
                          <ul id="holiday-list"></ul>
                     </div>
                 </section>
@@ -443,15 +483,17 @@
         
         const bookingForm = document.getElementById('booking-form');
         const holidayDateInput = document.getElementById('holiday-date');
+        const leaveStatusSelect = document.getElementById('leave-status');
         const holidayListEl = document.getElementById('holiday-list');
         
-        const themeToggleLanding = document.getElementById('theme-toggle-landing');
-        const themeToggleDashboard = document.getElementById('theme-toggle-dashboard');
+        const themeSwitcherLanding = document.getElementById('theme-switcher-landing');
+        const themeSwitcherDashboard = document.getElementById('theme-switcher-dashboard');
 
         // --- STATE ---
         let holidays = [];
         let totalAllowance = 204.5;
         const DEDUCTION_HOURS = 11.5;
+        let currentTheme = 'light';
 
         // --- NAVIGATION ---
         function showPage(pageToShow) {
@@ -464,27 +506,29 @@
 
         // --- THEME LOGIC ---
         const applyTheme = (theme) => {
+            currentTheme = theme;
             document.body.classList.toggle('dark-mode', theme === 'dark');
-            themeToggleLanding.checked = theme === 'dark';
-            themeToggleDashboard.checked = theme === 'dark';
         };
         
         function handleThemeToggle() {
-            const newTheme = this.checked ? 'dark' : 'light';
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
             localStorage.setItem('theme', newTheme);
             applyTheme(newTheme);
         }
 
-        themeToggleLanding.addEventListener('change', handleThemeToggle);
-        themeToggleDashboard.addEventListener('change', handleThemeToggle);
+        themeSwitcherLanding.addEventListener('click', handleThemeToggle);
+        themeSwitcherDashboard.addEventListener('click', handleThemeToggle);
 
         // --- FUNCTIONS ---
         function updateSummary() {
-            const bookedHours = holidays.reduce((total, holiday) => total + holiday.hours, 0);
-            const remainingHours = totalAllowance - bookedHours;
+            const approvedBookedHours = holidays
+                .filter(holiday => holiday.status === 'Approved')
+                .reduce((total, holiday) => total + holiday.hours, 0);
+                
+            const remainingHours = totalAllowance - approvedBookedHours;
 
             totalAllowanceInput.value = totalAllowance.toFixed(1);
-            bookedHoursEl.value = bookedHours.toFixed(1);
+            bookedHoursEl.value = approvedBookedHours.toFixed(1);
             remainingHoursDisplay.value = remainingHours.toFixed(1);
         }
 
@@ -495,11 +539,12 @@
             const sortedHolidays = [...holidays].sort((a, b) => new Date(a.rawDate) - new Date(b.rawDate));
             sortedHolidays.forEach(holiday => {
                 const li = document.createElement('li');
+                li.className = `status-${holiday.status}`;
                 li.setAttribute('data-id', holiday.id);
                 li.innerHTML = `
                     <div class="holiday-info">
                         <strong>${holiday.description}</strong>
-                        <span>${holiday.hours} hours</span>
+                        <span><span class="status-text status-${holiday.status}">${holiday.status}</span> - ${holiday.hours} hours</span>
                     </div>
                     <div class="holiday-actions">
                         <button class="delete-btn" title="Delete this booking">🗑️</button>
@@ -522,7 +567,8 @@
                 id: Date.now(),
                 description: holidayDate.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'short' }),
                 rawDate: holidayDateValue,
-                hours: DEDUCTION_HOURS
+                hours: DEDUCTION_HOURS,
+                status: leaveStatusSelect.value
             };
 
             holidays.push(newHoliday);
@@ -571,7 +617,6 @@
             } else { // Locking
                 editAllowanceBtn.textContent = '🔒';
                 editAllowanceBtn.title = 'Edit Allowance';
-                // Manually trigger change event to save
                 totalAllowanceInput.dispatchEvent(new Event('change'));
             }
         });
@@ -584,8 +629,10 @@
 
         remainingHoursDisplay.addEventListener('change', (e) => {
             const newRemaining = parseFloat(e.target.value) || 0;
-            const currentBooked = holidays.reduce((total, holiday) => total + holiday.hours, 0);
-            totalAllowance = newRemaining + currentBooked;
+            const approvedBookedHours = holidays
+                .filter(holiday => holiday.status === 'Approved')
+                .reduce((total, holiday) => total + holiday.hours, 0);
+            totalAllowance = newRemaining + approvedBookedHours;
             updateSummary();
             saveData();
         });
