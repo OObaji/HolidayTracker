@@ -60,7 +60,7 @@
             padding: 1.5rem;
             background-color: var(--background-dark);
             transition: background-color 0.5s;
-            overflow: hidden; /* Prevent scrollbars from the pseudo-element */
+            overflow-x: hidden; /* Prevent horizontal scrollbars, allow vertical */
             position: relative;
         }
 
@@ -376,6 +376,7 @@
             max-height: 250px;
             overflow-y: auto;
             padding-right: 10px;
+            -webkit-overflow-scrolling: touch; /* Improve scrolling on iOS */
         }
 
         #holiday-list::-webkit-scrollbar { width: 6px; }
@@ -448,7 +449,7 @@
         }
         
         @media (max-width: 500px) {
-            body { padding: 1rem; align-items: flex-start; overflow-x: hidden; }
+            body { padding: 1rem; align-items: flex-start; }
             .app-container { padding: 1.5rem; }
             #booking-form { grid-template-columns: 1fr; gap: 0.5rem; }
             #booking-form button { width: 100%; margin-top: 0.5rem; }
