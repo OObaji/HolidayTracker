@@ -9,34 +9,40 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-color: #8b5cf6; /* Violet */
-            --secondary-color: #ec4899; /* Pink */
+            --primary-color: #f97316; /* Orange-500 */
+            --secondary-color: #fb923c; /* Orange-400 */
             --approved-color: #16a34a; /* Green 600 */
             --pending-color: #d97706; /* Amber 600 */
-            --draft-color: #475569; /* Slate 600 - Updated for better contrast */
-            --background-start: #dbeafe;
-            --background-end: #fce7f3;
-            --card-bg: rgba(255, 255, 255, 0.6);
-            --text-dark: #1f2937;
-            --text-light: #6b7280;
-            --border-color: rgba(255, 255, 255, 0.8);
-            --shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
-            --input-bg: rgba(255, 255, 255, 0.5);
+            --draft-color: #475569; /* Slate 600 */
+            
+            /* Interactive Dark Theme */
+            --background-dark: #0d1117;
+            --spotlight-color-1: #f97316;
+            --spotlight-color-2: #4a2a09;
+            
+            --card-bg: rgba(30, 41, 59, 0.5); /* Dark card background */
+            --text-dark: #f1f5f9; /* Light text for dark bg */
+            --text-light: #94a3b8; /* Lighter text for dark bg */
+            --border-color: rgba(255, 255, 255, 0.1);
+            --shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+            --input-bg: rgba(0, 0, 0, 0.2);
         }
 
         body.dark-mode {
-            --primary-color: #a78bfa; /* Lighter Violet */
-            --secondary-color: #f472b6; /* Lighter Pink */
+            /* Keep dark mode for consistency, but it's now the default */
+            --primary-color: #fb923c; /* Orange 400 */
+            --secondary-color: #fdba74; /* Orange 300 */
             --approved-color: #4ade80; /* Green 400 */
             --pending-color: #fb923c; /* Orange 400 */
             --draft-color: #94a3b8; /* Slate 400 */
-            --background-start: #1e293b;
-            --background-end: #312e81;
-            --card-bg: rgba(30, 41, 59, 0.5);
-            --text-dark: #f1f5f9;
-            --text-light: #94a3b8;
+            --background-dark: #010409;
+            --spotlight-color-1: #fb923c;
+            --spotlight-color-2: #312e81;
+            --card-bg: rgba(15, 23, 42, 0.6);
+            --text-dark: #f8fafc;
+            --text-light: #a1a1aa;
             --border-color: rgba(255, 255, 255, 0.1);
-            --input-bg: rgba(0, 0, 0, 0.2);
+            --input-bg: rgba(0, 0, 0, 0.3);
         }
 
         * {
@@ -52,23 +58,52 @@
             align-items: center;
             min-height: 100vh;
             padding: 1.5rem;
-            background: linear-gradient(125deg, var(--background-start), var(--background-end));
-            background-size: 400% 400%;
-            animation: gradientBG 15s ease infinite;
+            background-color: var(--background-dark);
             transition: background-color 0.5s;
-            overflow-x: hidden; /* Fix: Allow vertical scroll */
+            overflow: hidden; /* Prevent scrollbars from the pseudo-element */
+            position: relative;
         }
 
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+        /* Interactive background effect */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            background: radial-gradient(
+                800px circle at var(--mouse-x, 50vw) var(--mouse-y, 50vh),
+                var(--spotlight-color-1),
+                transparent 40%
+            );
+            opacity: 0.2;
+            transition: background 0.2s ease-out;
         }
         
+        body::after {
+             content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            background: radial-gradient(
+                1200px circle at var(--mouse-x, 50vw) var(--mouse-y, 50vh),
+                var(--spotlight-color-2),
+                transparent 60%
+            );
+            opacity: 0.15;
+             transition: background 0.2s ease-out;
+        }
+
         .page {
             width: 100%;
             max-width: 550px;
             animation: page-in 0.7s ease-out forwards;
+            z-index: 10;
         }
 
         @keyframes page-in {
@@ -80,43 +115,76 @@
             display: none;
         }
 
-        /* --- Landing Page Styles --- */
-        #landing-page .app-container {
+        /* --- Auth Page Styles --- */
+        #auth-page .app-container {
             text-align: center;
         }
-        
-        #landing-page h1 {
-            font-size: 3rem;
-            font-weight: 800;
-            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 1rem;
+        #auth-page h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
         }
-
-        #landing-page p {
-            font-size: 1.1rem;
-            color: var(--text-light);
-            margin-bottom: 2.5rem;
+        #auth-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-top: 2rem;
         }
-
-        #open-tracker-btn {
+        #auth-form input {
+             width: 100%;
+            padding: 0.8rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            font-size: 1rem;
             font-family: 'Plus Jakarta Sans', sans-serif;
-            padding: 1rem 2.5rem;
-            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            background-color: var(--input-bg);
+            color: var(--text-dark);
+            transition: all 0.3s;
+        }
+         #auth-form input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px var(--primary-color);
+        }
+        #auth-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        #auth-actions button {
+            flex-grow: 1;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            padding: 0.8rem 1.5rem;
             color: white;
             border: none;
-            border-radius: 50px;
-            font-size: 1.1rem;
+            border-radius: 10px;
+            font-size: 1rem;
             font-weight: 700;
             cursor: pointer;
             transition: transform 0.2s, box-shadow 0.3s;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
         }
-        
-        #open-tracker-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 7px 25px rgba(0,0,0,0.2);
+        #login-btn {
+             background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+        }
+        #signup-btn {
+            background: var(--text-light);
+        }
+        #auth-toggle {
+            margin-top: 1.5rem;
+            color: var(--text-light);
+        }
+        #auth-toggle button {
+            background: none;
+            border: none;
+            color: var(--primary-color);
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        #auth-error {
+            color: #ef4444;
+            margin-top: 1rem;
+            font-weight: 500;
+            min-height: 1.2em;
         }
 
 
@@ -150,6 +218,7 @@
             font-size: 1.5rem;
             cursor: pointer;
             transition: transform 0.3s ease;
+            display: inline-block; /* Added for proper alignment */
         }
         .theme-switcher:hover { transform: scale(1.1) rotate(15deg); }
         .theme-switcher .moon { display: none; }
@@ -354,71 +423,76 @@
         .holiday-info strong { font-weight: 600; }
         .holiday-info span { color: var(--text-light); font-size: 0.9rem; display: block; margin-top: 2px; }
         
-        /* New styles for status text */
         .status-text {
             font-weight: 700;
         }
-        .status-text.status-Approved {
-            color: var(--approved-color);
-        }
-        .status-text.status-Pending {
-            color: var(--pending-color);
-        }
-        .status-text.status-Draft {
-            color: var(--draft-color);
-        }
+        .status-text.status-Approved { color: var(--approved-color); }
+        .status-text.status-Pending { color: var(--pending-color); }
+        .status-text.status-Draft { color: var(--draft-color); }
 
         .holiday-actions button { background: none; border: none; cursor: pointer; font-size: 1.2rem; color: var(--text-light); transition: all 0.2s; padding: 5px; }
         .holiday-actions button:hover { color: #ef4444; transform: scale(1.1); }
         
-        .home-button {
+        .logout-button {
             background: none;
             border: none;
             font-size: 1.5rem;
             cursor: pointer;
             color: var(--text-light);
             transition: color 0.2s, transform 0.2s;
+            vertical-align: middle;
         }
-        .home-button:hover {
+        .logout-button:hover {
             color: var(--text-dark);
             transform: scale(1.1);
         }
         
         @media (max-width: 500px) {
-            body { padding: 1rem; align-items: flex-start; }
+            body { padding: 1rem; align-items: flex-start; overflow-x: hidden; }
             .app-container { padding: 1.5rem; }
             #booking-form { grid-template-columns: 1fr; gap: 0.5rem; }
             #booking-form button { width: 100%; margin-top: 0.5rem; }
             #remaining-hours-display { font-size: 4rem; }
-            #landing-page h1 { font-size: 2.5rem; }
+            #auth-page h1 { font-size: 2rem; }
         }
 
     </style>
 </head>
 <body>
 
-    <section id="landing-page" class="page">
+    <section id="auth-page" class="page">
         <div class="app-container">
-             <div style="display: flex; justify-content: flex-end;">
-                <div class="theme-switcher" id="theme-switcher-landing" title="Toggle theme">
+            <div style="display: flex; justify-content: flex-end;">
+                <div class="theme-switcher" id="theme-switcher-auth" title="Toggle theme">
                     <span class="sun-icon">☀️</span>
                     <span class="moon">🌙</span>
                 </div>
             </div>
-            <h1>Annual Leave Tracker</h1>
-            <p>Your simple, beautiful holiday hours tracker.</p>
-            <button id="open-tracker-btn">Open Tracker</button>
+            <h1 id="auth-title">Login</h1>
+            <p id="auth-subtitle">Welcome back! Please enter your details.</p>
+            <form id="auth-form">
+                <input type="email" id="email-input" placeholder="Email" required>
+                <input type="password" id="password-input" placeholder="Password" required>
+                <div id="auth-actions">
+                    <button type="button" id="login-btn">Login</button>
+                    <button type="button" id="signup-btn">Sign Up</button>
+                </div>
+            </form>
+            <p id="auth-error"></p>
         </div>
     </section>
 
     <section id="dashboard-page" class="page hidden">
         <div class="app-container">
             <header>
-                <button class="home-button" id="go-home-btn" title="Go to Home">🏠</button>
-                <div class="theme-switcher" id="theme-switcher-dashboard" title="Toggle theme">
-                    <span class="sun-icon">☀️</span>
-                    <span class="moon">🌙</span>
-                </div>
+                 <h1>My Leave</h1>
+                 <div style="display: flex; align-items: center; gap: 1rem;">
+                    <button class="logout-button" id="logout-btn" title="Logout">🚪</button>
+                    <div class="theme-switcher" id="theme-switcher-dashboard" title="Toggle theme">
+                        <span class="sun-icon">☀️</span>
+                        <span class="moon">🌙</span>
+                    </div>
+                 </div>
             </header>
 
             <main>
@@ -468,187 +542,293 @@
         </div>
     </section>
 
-    <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        // --- DOM ELEMENTS ---
-        const landingPage = document.getElementById('landing-page');
-        const dashboardPage = document.getElementById('dashboard-page');
-        const openTrackerBtn = document.getElementById('open-tracker-btn');
-        const goHomeBtn = document.getElementById('go-home-btn');
-        
-        const totalAllowanceInput = document.getElementById('total-allowance');
-        const remainingHoursDisplay = document.getElementById('remaining-hours-display');
-        const bookedHoursEl = document.getElementById('booked-hours');
-        const editAllowanceBtn = document.getElementById('edit-allowance-btn');
-        
-        const bookingForm = document.getElementById('booking-form');
-        const holidayDateInput = document.getElementById('holiday-date');
-        const leaveStatusSelect = document.getElementById('leave-status');
-        const holidayListEl = document.getElementById('holiday-list');
-        
-        const themeSwitcherLanding = document.getElementById('theme-switcher-landing');
-        const themeSwitcherDashboard = document.getElementById('theme-switcher-dashboard');
+    <!-- Firebase SDK -->
+    <script type="module">
+        // Import Firebase modules
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-analytics.js";
+        import { 
+            getAuth, 
+            onAuthStateChanged, 
+            createUserWithEmailAndPassword, 
+            signInWithEmailAndPassword,
+            signOut
+        } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+        import { getFirestore, doc, setDoc, addDoc, deleteDoc, onSnapshot, collection, query } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 
-        // --- STATE ---
-        let holidays = [];
-        let totalAllowance = 204.5;
-        const DEDUCTION_HOURS = 11.5;
-        let currentTheme = 'light';
-
-        // --- NAVIGATION ---
-        function showPage(pageToShow) {
-            landingPage.classList.toggle('hidden', pageToShow !== landingPage);
-            dashboardPage.classList.toggle('hidden', pageToShow !== dashboardPage);
-        }
-        
-        openTrackerBtn.addEventListener('click', () => showPage(dashboardPage));
-        goHomeBtn.addEventListener('click', () => showPage(landingPage));
-
-        // --- THEME LOGIC ---
-        const applyTheme = (theme) => {
-            currentTheme = theme;
-            document.body.classList.toggle('dark-mode', theme === 'dark');
-        };
-        
-        function handleThemeToggle() {
-            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-            localStorage.setItem('theme', newTheme);
-            applyTheme(newTheme);
-        }
-
-        themeSwitcherLanding.addEventListener('click', handleThemeToggle);
-        themeSwitcherDashboard.addEventListener('click', handleThemeToggle);
-
-        // --- FUNCTIONS ---
-        function updateSummary() {
-            const approvedBookedHours = holidays
-                .filter(holiday => holiday.status === 'Approved')
-                .reduce((total, holiday) => total + holiday.hours, 0);
-                
-            const remainingHours = totalAllowance - approvedBookedHours;
-
-            totalAllowanceInput.value = totalAllowance.toFixed(1);
-            bookedHoursEl.value = approvedBookedHours.toFixed(1);
-            remainingHoursDisplay.value = remainingHours.toFixed(1);
-        }
-
-        function renderHolidays() {
-            holidayListEl.innerHTML = '';
-            document.getElementById('list-title').style.display = holidays.length > 0 ? 'block' : 'none';
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- DOM ELEMENTS ---
+            const authPage = document.getElementById('auth-page');
+            const dashboardPage = document.getElementById('dashboard-page');
             
-            const sortedHolidays = [...holidays].sort((a, b) => new Date(a.rawDate) - new Date(b.rawDate));
-            sortedHolidays.forEach(holiday => {
-                const li = document.createElement('li');
-                li.className = `status-${holiday.status}`;
-                li.setAttribute('data-id', holiday.id);
-                li.innerHTML = `
-                    <div class="holiday-info">
-                        <strong>${holiday.description}</strong>
-                        <span><span class="status-text status-${holiday.status}">${holiday.status}</span> - ${holiday.hours} hours</span>
-                    </div>
-                    <div class="holiday-actions">
-                        <button class="delete-btn" title="Delete this booking">🗑️</button>
-                    </div>
-                `;
-                holidayListEl.appendChild(li);
-            });
-        }
+            const emailInput = document.getElementById('email-input');
+            const passwordInput = document.getElementById('password-input');
+            const loginBtn = document.getElementById('login-btn');
+            const signupBtn = document.getElementById('signup-btn');
+            const logoutBtn = document.getElementById('logout-btn');
+            const authError = document.getElementById('auth-error');
 
-        function addHoliday(e) {
-            e.preventDefault();
-            const holidayDateValue = holidayDateInput.value;
-            if (!holidayDateValue) {
-                alert('Please select a date.');
-                return;
+            const totalAllowanceInput = document.getElementById('total-allowance');
+            const remainingHoursDisplay = document.getElementById('remaining-hours-display');
+            const bookedHoursEl = document.getElementById('booked-hours');
+            const editAllowanceBtn = document.getElementById('edit-allowance-btn');
+            
+            const bookingForm = document.getElementById('booking-form');
+            const holidayDateInput = document.getElementById('holiday-date');
+            const leaveStatusSelect = document.getElementById('leave-status');
+            const holidayListEl = document.getElementById('holiday-list');
+            
+            const themeSwitcherAuth = document.getElementById('theme-switcher-auth');
+            const themeSwitcherDashboard = document.getElementById('theme-switcher-dashboard');
+
+            // --- FIREBASE & STATE ---
+            let db, auth, userId;
+            
+            let holidays = [];
+            let totalAllowance = 204.5;
+            const DEDUCTION_HOURS = 11.5;
+            let currentTheme = 'light';
+            let settingsUnsubscribe = null;
+            let holidaysUnsubscribe = null;
+
+            // --- INITIALIZATION ---
+            function initializeFirebase() {
+                try {
+                    const firebaseConfig = {
+                        apiKey: "AIzaSyCC73KkYCh-WilEo4d5lYtAxAHnVYUlFBs",
+                        authDomain: "absencecal-46de8.firebaseapp.com",
+                        projectId: "absencecal-46de8",
+                        storageBucket: "absencecal-46de8.firebasestorage.app",
+                        messagingSenderId: "141681808303",
+                        appId: "1:141681808303:web:da55506c0ba66e6440d55a",
+                        measurementId: "G-BBZQ48GZH0"
+                    };
+                    const app = initializeApp(firebaseConfig);
+                    const analytics = getAnalytics(app);
+                    db = getFirestore(app);
+                    auth = getAuth(app);
+                    
+                    onAuthStateChanged(auth, (user) => {
+                        if (user) {
+                            userId = user.uid;
+                            console.log("User is signed in with UID:", userId);
+                            showPage(dashboardPage);
+                            setupFirestoreListeners();
+                        } else {
+                            userId = null;
+                            console.log("User is signed out.");
+                            showPage(authPage);
+                            // Clean up listeners when logged out
+                            if (settingsUnsubscribe) settingsUnsubscribe();
+                            if (holidaysUnsubscribe) holidaysUnsubscribe();
+                            holidays = [];
+                            renderHolidays();
+                            updateSummary();
+                        }
+                    });
+                } catch (error) {
+                    console.error("Firebase initialization failed:", error);
+                    authError.textContent = "Initialization failed. Please refresh.";
+                }
             }
-            const holidayDate = new Date(holidayDateValue);
+
+            // --- NAVIGATION ---
+            function showPage(pageToShow) {
+                authPage.classList.toggle('hidden', pageToShow !== authPage);
+                dashboardPage.classList.toggle('hidden', pageToShow !== dashboardPage);
+            }
+
+            // --- THEME LOGIC ---
+            const applyTheme = (theme) => {
+                currentTheme = theme;
+                document.body.classList.toggle('dark-mode', theme === 'dark');
+                localStorage.setItem('theme', theme);
+            };
             
-            const newHoliday = {
-                id: Date.now(),
-                description: holidayDate.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'short' }),
-                rawDate: holidayDateValue,
-                hours: DEDUCTION_HOURS,
-                status: leaveStatusSelect.value
+            function handleThemeToggle() {
+                const newTheme = document.body.classList.contains('dark-mode') ? 'light' : 'dark';
+                applyTheme(newTheme);
+            }
+
+            themeSwitcherAuth.addEventListener('click', handleThemeToggle);
+            themeSwitcherDashboard.addEventListener('click', handleThemeToggle);
+
+            // --- MOUSE INTERACTION ---
+            document.body.addEventListener('mousemove', (e) => {
+                document.documentElement.style.setProperty('--mouse-x', `${e.clientX}px`);
+                document.documentElement.style.setProperty('--mouse-y', `${e.clientY}px`);
+            });
+
+            // --- AUTH FUNCTIONS ---
+            const handleAuthAction = async (action) => {
+                const email = emailInput.value;
+                const password = passwordInput.value;
+                authError.textContent = '';
+                if (!email || !password) {
+                    authError.textContent = 'Please enter both email and password.';
+                    return;
+                }
+                try {
+                    if (action === 'signup') {
+                        await createUserWithEmailAndPassword(auth, email, password);
+                    } else {
+                        await signInWithEmailAndPassword(auth, email, password);
+                    }
+                } catch (error) {
+                    console.error(`Auth error (${action}):`, error.message);
+                    authError.textContent = error.message.replace('Firebase: ', '');
+                }
             };
 
-            holidays.push(newHoliday);
-            saveData();
-            renderHolidays();
-            updateSummary();
-            bookingForm.reset();
-        }
-        
-        function deleteHoliday(id) {
-            holidays = holidays.filter(holiday => holiday.id !== id);
-            saveData();
-            renderHolidays();
-            updateSummary();
-        }
-        
-        function saveData() {
-            localStorage.setItem('holidayTracker.holidays', JSON.stringify(holidays));
-            localStorage.setItem('holidayTracker.allowance', totalAllowance);
-        }
-        
-        function loadData() {
-            const savedTheme = localStorage.getItem('theme');
-            const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            applyTheme(savedTheme || (systemPrefersDark ? 'dark' : 'light'));
+            loginBtn.addEventListener('click', () => handleAuthAction('login'));
+            signupBtn.addEventListener('click', () => handleAuthAction('signup'));
+            logoutBtn.addEventListener('click', () => signOut(auth));
 
-            const savedHolidays = JSON.parse(localStorage.getItem('holidayTracker.holidays'));
-            const savedAllowance = localStorage.getItem('holidayTracker.allowance');
 
-            if (savedHolidays) holidays = savedHolidays;
-            if (savedAllowance) totalAllowance = parseFloat(savedAllowance);
+            // --- DATA FUNCTIONS ---
+            function updateSummary() {
+                const approvedBookedHours = holidays
+                    .filter(holiday => holiday.status === 'Approved')
+                    .reduce((total, holiday) => total + holiday.hours, 0);
+                    
+                const remainingHours = totalAllowance - approvedBookedHours;
+
+                totalAllowanceInput.value = totalAllowance.toFixed(1);
+                bookedHoursEl.value = approvedBookedHours.toFixed(1);
+                remainingHoursDisplay.value = remainingHours.toFixed(1);
+            }
+
+            function renderHolidays() {
+                holidayListEl.innerHTML = '';
+                document.getElementById('list-title').style.display = holidays.length > 0 ? 'block' : 'none';
+                
+                const sortedHolidays = [...holidays].sort((a, b) => new Date(a.rawDate) - new Date(b.rawDate));
+                sortedHolidays.forEach(holiday => {
+                    const li = document.createElement('li');
+                    li.className = `status-${holiday.status}`;
+                    li.setAttribute('data-id', holiday.id);
+                    li.innerHTML = `
+                        <div class="holiday-info">
+                            <strong>${holiday.description}</strong>
+                            <span><span class="status-text status-${holiday.status}">${holiday.status}</span> - ${holiday.hours} hours</span>
+                        </div>
+                        <div class="holiday-actions">
+                            <button class="delete-btn" title="Delete this booking">🗑️</button>
+                        </div>
+                    `;
+                    holidayListEl.appendChild(li);
+                });
+            }
+
+            async function addHoliday(e) {
+                e.preventDefault();
+                const holidayDateValue = holidayDateInput.value;
+                if (!holidayDateValue || !userId) {
+                    alert('Please select a date.');
+                    return;
+                }
+                const holidayDate = new Date(holidayDateValue);
+                
+                const newHoliday = {
+                    description: holidayDate.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'short' }),
+                    rawDate: holidayDateValue,
+                    hours: DEDUCTION_HOURS,
+                    status: leaveStatusSelect.value,
+                    createdAt: new Date()
+                };
+
+                try {
+                    const holidaysColRef = collection(db, 'users', userId, 'holidays');
+                    await addDoc(holidaysColRef, newHoliday);
+                    bookingForm.reset();
+                } catch (error) {
+                    console.error("Error adding holiday: ", error);
+                }
+            }
             
-            renderHolidays();
-            updateSummary();
-        }
-
-        // --- EVENT LISTENERS ---
-        editAllowanceBtn.addEventListener('click', () => {
-            const isLocked = totalAllowanceInput.disabled;
-            totalAllowanceInput.disabled = !isLocked;
-
-            if (isLocked) { // Unlocking
-                editAllowanceBtn.textContent = '🔓';
-                editAllowanceBtn.title = 'Save Allowance';
-                totalAllowanceInput.focus();
-            } else { // Locking
-                editAllowanceBtn.textContent = '🔒';
-                editAllowanceBtn.title = 'Edit Allowance';
-                totalAllowanceInput.dispatchEvent(new Event('change'));
+            async function deleteHoliday(id) {
+                if (!userId) return;
+                try {
+                    const holidayDocRef = doc(db, 'users', userId, 'holidays', id);
+                    await deleteDoc(holidayDocRef);
+                } catch (error) {
+                    console.error("Error deleting holiday: ", error);
+                }
             }
-        });
-
-        totalAllowanceInput.addEventListener('change', (e) => {
-            totalAllowance = parseFloat(e.target.value) || 0;
-            updateSummary();
-            saveData();
-        });
-
-        remainingHoursDisplay.addEventListener('change', (e) => {
-            const newRemaining = parseFloat(e.target.value) || 0;
-            const approvedBookedHours = holidays
-                .filter(holiday => holiday.status === 'Approved')
-                .reduce((total, holiday) => total + holiday.hours, 0);
-            totalAllowance = newRemaining + approvedBookedHours;
-            updateSummary();
-            saveData();
-        });
-        
-        bookingForm.addEventListener('submit', addHoliday);
-        
-        holidayListEl.addEventListener('click', (e) => {
-            if (e.target.classList.contains('delete-btn')) {
-                const id = parseInt(e.target.closest('li').dataset.id, 10);
-                deleteHoliday(id);
+            
+            async function updateAllowance(newAllowance) {
+                if (!userId) return;
+                try {
+                    const settingsDocRef = doc(db, 'users', userId, 'settings', 'main');
+                    await setDoc(settingsDocRef, { totalAllowance: newAllowance }, { merge: true });
+                } catch (error) {
+                    console.error("Error updating allowance: ", error);
+                }
             }
-        });
+            
+            function setupFirestoreListeners() {
+                if (!userId) return;
 
-        // --- INITIAL LOAD ---
-        loadData();
-    });
+                if (settingsUnsubscribe) settingsUnsubscribe();
+                if (holidaysUnsubscribe) holidaysUnsubscribe();
+
+                const settingsDocRef = doc(db, 'users', userId, 'settings', 'main');
+                settingsUnsubscribe = onSnapshot(settingsDocRef, (docSnap) => {
+                    if (docSnap.exists() && docSnap.data().totalAllowance !== undefined) {
+                        totalAllowance = parseFloat(docSnap.data().totalAllowance);
+                    } else {
+                        totalAllowance = 204.5;
+                        updateAllowance(totalAllowance);
+                    }
+                    updateSummary();
+                }, (error) => console.error("Error listening to settings:", error));
+
+                const holidaysColRef = collection(db, 'users', userId, 'holidays');
+                holidaysUnsubscribe = onSnapshot(query(holidaysColRef), (querySnapshot) => {
+                    holidays = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    renderHolidays();
+                    updateSummary();
+                }, (error) => console.error("Error listening to holidays:", error));
+            }
+
+            function loadLocalPreferences() {
+                const savedTheme = localStorage.getItem('theme');
+                // Default to dark theme if no preference is saved
+                applyTheme(savedTheme || 'dark');
+            }
+
+            // --- EVENT LISTENERS ---
+            editAllowanceBtn.addEventListener('click', () => {
+                const isLocked = totalAllowanceInput.disabled;
+                totalAllowanceInput.disabled = !isLocked;
+                editAllowanceBtn.textContent = isLocked ? '🔓' : '🔒';
+                editAllowanceBtn.title = isLocked ? 'Save Allowance' : 'Edit Allowance';
+                if (isLocked) totalAllowanceInput.focus();
+                else totalAllowanceInput.dispatchEvent(new Event('change'));
+            });
+
+            totalAllowanceInput.addEventListener('change', (e) => updateAllowance(parseFloat(e.target.value) || 0));
+
+            remainingHoursDisplay.addEventListener('change', (e) => {
+                const newRemaining = parseFloat(e.target.value) || 0;
+                const approvedBookedHours = holidays.filter(h => h.status === 'Approved').reduce((t, h) => t + h.hours, 0);
+                updateAllowance(newRemaining + approvedBookedHours);
+            });
+            
+            bookingForm.addEventListener('submit', addHoliday);
+            
+            holidayListEl.addEventListener('click', (e) => {
+                const deleteBtn = e.target.closest('.delete-btn');
+                if (deleteBtn) {
+                    const id = deleteBtn.closest('li').dataset.id;
+                    deleteHoliday(id);
+                }
+            });
+
+            // --- INITIAL LOAD ---
+            loadLocalPreferences();
+            initializeFirebase();
+        });
     </script>
 </body>
 </html>
